@@ -3,7 +3,7 @@
 namespace CodeGenerator\Traits;
 
 use CodeGenerator\EntityName;
-use CodeGenerator\Exception\ClassGeneratorException;
+use CodeGenerator\Exception\CodeGeneratorException;
 
 trait HasTraits
 {
@@ -13,15 +13,15 @@ trait HasTraits
     /**
      * @param EntityName[] $traits
      * @return $this
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function setTraits(array $traits): self
     {
         foreach ($traits as $trait) {
             if (!$trait instanceof EntityName) {
-                throw new ClassGeneratorException('Invalid trait');
+                throw new CodeGeneratorException('Invalid trait');
             } else if (!trait_exists($trait->getFullName())) {
-                throw new ClassGeneratorException('Trait doesn\'t exists');
+                throw new CodeGeneratorException('Trait doesn\'t exists');
             }
         }
 
@@ -31,12 +31,12 @@ trait HasTraits
     }
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function addTrait(EntityName $trait): self
     {
         if (!trait_exists($trait->getFullName())) {
-            throw new ClassGeneratorException('Trait doesn\'t exists');
+            throw new CodeGeneratorException('Trait doesn\'t exists');
         }
 
         $this->traits[] = $trait;

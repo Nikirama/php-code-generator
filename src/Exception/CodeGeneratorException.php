@@ -4,6 +4,6 @@ namespace CodeGenerator\Exception;
 
 use Exception;
 
-class ClassGeneratorException extends Exception
+class CodeGeneratorException extends Exception
 {
 }

@@ -3,7 +3,7 @@
 namespace CodeGenerator\Traits;
 
 use CodeGenerator\EntityName;
-use CodeGenerator\Exception\ClassGeneratorException;
+use CodeGenerator\Exception\CodeGeneratorException;
 
 trait HasInterfaces
 {
@@ -13,15 +13,15 @@ trait HasInterfaces
     /**
      * @param EntityName[] $interfaces
      * @return $this
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function setInterfaces(array $interfaces): self
     {
         foreach ($interfaces as $interface) {
             if (!$interface instanceof EntityName) {
-                throw new ClassGeneratorException('Invalid interface');
+                throw new CodeGeneratorException('Invalid interface');
             } else if (!interface_exists($interface->getFullName())) {
-                throw new ClassGeneratorException('Interface doesn\'t exists');
+                throw new CodeGeneratorException('Interface doesn\'t exists');
             }
         }
 
@@ -31,12 +31,12 @@ trait HasInterfaces
     }
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function addInterface(EntityName $interface): self
     {
         if (!interface_exists($interface->getFullName())) {
-            throw new ClassGeneratorException('Interface doesn\'t exists');
+            throw new CodeGeneratorException('Interface doesn\'t exists');
         }
 
         $this->interfaces[] = $interface;

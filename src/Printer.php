@@ -4,7 +4,7 @@ namespace CodeGenerator;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\VarExporter;
-use CodeGenerator\Exception\ClassGeneratorException;
+use CodeGenerator\Exception\CodeGeneratorException;
 use CodeGenerator\Model\Argument;
 use CodeGenerator\Model\Constant;
 use CodeGenerator\Model\Method;
@@ -29,7 +29,7 @@ class Printer
 
     /**
      * @throws ExportException
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function generate(): string
     {
@@ -40,17 +40,17 @@ class Printer
         } else if ($this->entity instanceof TraitGenerator) {
             return $this->generateTrait();
         }
-        throw new ClassGeneratorException('Unknown entity');
+        throw new CodeGeneratorException('Unknown entity');
     }
 
     /**
      * @throws ExportException
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     protected function generateClass(): string
     {
         if (!$this->entity instanceof ClassGenerator) {
-            throw new ClassGeneratorException('Incorrect entity');
+            throw new CodeGeneratorException('Incorrect entity');
         }
 
         $result = "<?php\n\n";
@@ -121,13 +121,13 @@ class Printer
     }
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      * @throws ExportException
      */
     protected function generateInterface(): string
     {
         if (!$this->entity instanceof InterfaceGenerator) {
-            throw new ClassGeneratorException('Incorrect entity');
+            throw new CodeGeneratorException('Incorrect entity');
         }
 
         $result = "<?php\n\n";
@@ -163,13 +163,13 @@ class Printer
     }
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      * @throws ExportException
      */
     protected function generateTrait(): string
     {
         if (!$this->entity instanceof TraitGenerator) {
-            throw new ClassGeneratorException('Incorrect entity');
+            throw new CodeGeneratorException('Incorrect entity');
         }
 
         $result = "<?php\n\n";

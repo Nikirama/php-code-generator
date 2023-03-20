@@ -2,21 +2,21 @@
 
 namespace CodeGenerator\Traits;
 
-use CodeGenerator\Exception\ClassGeneratorException;
+use CodeGenerator\Exception\CodeGeneratorException;
 
 trait CanBeAbstract
 {
     protected bool $isAbstract = false;
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function makeAbstract(): self
     {
         if (property_exists($this, 'isFinal') && $this->isFinal) {
-            throw new ClassGeneratorException('Entity cannot be abstract. It\'s already final');
+            throw new CodeGeneratorException('Entity cannot be abstract. It\'s already final');
         } else if (property_exists($this, 'isStatic') && $this->isStatic) {
-            throw new ClassGeneratorException('Method cannot be abstract. It\'s already static');
+            throw new CodeGeneratorException('Method cannot be abstract. It\'s already static');
         }
 
         $this->isAbstract = true;

@@ -2,7 +2,7 @@
 
 namespace CodeGenerator;
 
-use CodeGenerator\Exception\ClassGeneratorException;
+use CodeGenerator\Exception\CodeGeneratorException;
 use CodeGenerator\Traits\CanBeAbstract;
 use CodeGenerator\Traits\CanBeFinal;
 use CodeGenerator\Traits\HasConstants;
@@ -18,12 +18,12 @@ class ClassGenerator extends Entity
     protected ?EntityName $parent = null;
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function setParent(?EntityName $parent): self
     {
         if ($parent !== null && !class_exists($parent->getFullName())) {
-            throw new ClassGeneratorException('Parent class doesn\'t exists');
+            throw new CodeGeneratorException('Parent class doesn\'t exists');
         }
 
         $this->parent = $parent;

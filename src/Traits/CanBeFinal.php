@@ -2,19 +2,19 @@
 
 namespace CodeGenerator\Traits;
 
-use CodeGenerator\Exception\ClassGeneratorException;
+use CodeGenerator\Exception\CodeGeneratorException;
 
 trait CanBeFinal
 {
     protected bool $isFinal = false;
 
     /**
-     * @throws ClassGeneratorException
+     * @throws CodeGeneratorException
      */
     public function makeFinal(): self
     {
         if (property_exists($this, 'isAbstract') && $this->isAbstract) {
-            throw new ClassGeneratorException('Entity cannot be final. It\'s already abstract');
+            throw new CodeGeneratorException('Entity cannot be final. It\'s already abstract');
         }
 
         $this->isFinal = true;
