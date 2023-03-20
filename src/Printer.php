@@ -4,6 +4,7 @@ namespace CodeGenerator;
 
 use Brick\VarExporter\ExportException;
 use Brick\VarExporter\VarExporter;
+use CodeGenerator\Exception\ClassGeneratorException;
 use CodeGenerator\Model\Argument;
 use CodeGenerator\Model\Constant;
 use CodeGenerator\Model\Method;
@@ -13,14 +14,14 @@ use CodeGenerator\Model\Value;
 
 class Printer
 {
-    protected ClassGenerator $entity;
+    protected Entity $entity;
 
     private string $tabulation;
 
     /** @var EntityName[] */
     protected array $uses = [];
 
-    public function __construct(ClassGenerator $entity, string $tabulation = "\t")
+    public function __construct(Entity $entity, string $tabulation = "\t")
     {
         $this->entity = $entity;
         $this->tabulation = $tabulation;
@@ -28,16 +29,37 @@ class Printer
 
     /**
      * @throws ExportException
+     * @throws ClassGeneratorException
      */
     public function generate(): string
     {
+        if ($this->entity instanceof ClassGenerator) {
+            return $this->generateClass();
+        } else if ($this->entity instanceof InterfaceGenerator) {
+            return $this->generateInterface();
+        } else if ($this->entity instanceof TraitGenerator) {
+            return $this->generateTrait();
+        }
+        throw new ClassGeneratorException('Unknown entity');
+    }
+
+    /**
+     * @throws ExportException
+     * @throws ClassGeneratorException
+     */
+    protected function generateClass(): string
+    {
+        if (!$this->entity instanceof ClassGenerator) {
+            throw new ClassGeneratorException('Incorrect entity');
+        }
+
         $result = "<?php\n\n";
 
         if (strlen($this->entity->getNamespace())) {
             $result .= "namespace {$this->entity->getNamespace()};\n\n";
         }
 
-        $result .= '<<<<<#USES#>>>>>';
+        $result .= '<<<<<#USES#>>>>>'; // TODO:: Fix it
 
         if ($this->entity->isAbstract()) {
             $result .= 'abstract ';
@@ -76,6 +98,96 @@ class Printer
                 $result .= $this->generateConstant($constant);
             }
             $result .= "\n";
+        }
+
+        $properties = $this->entity->getProperties();
+        if (count($properties)) {
+            foreach ($properties as $property) {
+                $result .= $this->generateProperty($property);
+            }
+            $result .= "\n";
+        }
+
+        $methods = $this->entity->getMethods();
+        if (count($methods)) {
+            foreach ($methods as $method) {
+                $result .= $this->generateMethod($method);
+            }
+        }
+
+        $result = str_replace('<<<<<#USES#>>>>>', $this->generateUses(), $result);
+
+        return "$result}\n";
+    }
+
+    /**
+     * @throws ClassGeneratorException
+     * @throws ExportException
+     */
+    protected function generateInterface(): string
+    {
+        if (!$this->entity instanceof InterfaceGenerator) {
+            throw new ClassGeneratorException('Incorrect entity');
+        }
+
+        $result = "<?php\n\n";
+
+        if (strlen($this->entity->getNamespace())) {
+            $result .= "namespace {$this->entity->getNamespace()};\n\n";
+        }
+
+        $result .= '<<<<<#USES#>>>>>'; // TODO:: Fix it
+
+        $result .= "interface {$this->entity->getName()}";
+
+        $interfaces = $this->entity->getInterfaces();
+        if (count($interfaces)) {
+            $result .= ' extends ' . implode(', ', array_map(function ($interface) {
+                $this->addUse($interface);
+                return $interface->getName();
+            }, $interfaces));
+        }
+
+        $result .= "\n{\n";
+
+        $methods = $this->entity->getMethods();
+        if (count($methods)) {
+            foreach ($methods as $method) {
+                $result .= $this->generateMethod($method);
+            }
+        }
+
+        $result = str_replace('<<<<<#USES#>>>>>', $this->generateUses(), $result);
+
+        return "$result}\n";
+    }
+
+    /**
+     * @throws ClassGeneratorException
+     * @throws ExportException
+     */
+    protected function generateTrait(): string
+    {
+        if (!$this->entity instanceof TraitGenerator) {
+            throw new ClassGeneratorException('Incorrect entity');
+        }
+
+        $result = "<?php\n\n";
+
+        if (strlen($this->entity->getNamespace())) {
+            $result .= "namespace {$this->entity->getNamespace()};\n\n";
+        }
+
+        $result .= '<<<<<#USES#>>>>>'; // TODO:: Fix it
+
+        $result .= "trait {$this->entity->getName()}\n{\n";
+
+        $traits = $this->entity->getTraits();
+        if ($traits) {
+            $result .= "{$this->tabulation}use " . implode(', ', array_map(function ($trait) {
+                    $this->addUse($trait);
+                    return $trait->getName();
+                }, $traits)) . ";\n\n";
         }
 
         $properties = $this->entity->getProperties();
