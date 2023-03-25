@@ -1,4 +1,4 @@
-# CodeGenerator  [![Travis CI](https://travis-ci.org/memio/memio.png)](https://travis-ci.org/memio/memio)
+# CodeGenerator
 
 CodeGenerator is a library, that allows you to describe PHP code by classes, interfaces and traits
 I'll give you some examples with classes
